@@ -1,0 +1,40 @@
+BeagleBoneBlack_C
+=================
+
+C Library for interfacing with the BeagleBone Black. 
+
+
+*****************************************************
+There are 3 Reference Programs:
+1) ReadingADC
+	Reads the input from an ADC and saves the ADC value along
+	with the date/time the value was read and stores it to a
+	specific location on the BeagleBone Black, which can be
+	set by changing the REQFILE. It reads a value every ten
+	minutes and runs for a total of 24hrs.
+2) TestOpenCloseADC
+	This program enables the ADC cape and then disables it.
+	This program was created just to prove an idea
+3) TestPWM
+	Outputs the PWM on a pin starting from a duty cylce of 0%
+	and going to 100%
+
+To run any of the above programs cd into the folder and run "make"
+
+****************************************************
+
+If using the library please add the Hdr.h header file to your main
+or whatever file will call the rest of the library. Also add the
+specific header of the function you are looking for.
+
+****************************************************
+
+TODO:
+
+1) Currently working on JB_Communication.h to add I2C, SPI, etc.
+
+Known Issues:
+
+1) The bone_capemgr.* always calls out "9" this can be changed in
+	the Hdr.h file if you are not using "9"
+

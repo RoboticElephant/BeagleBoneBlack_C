@@ -1,0 +1,5 @@
+#no .a or .o files
+*.[oa]
+
+#no tildes ~
+*~
