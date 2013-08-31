@@ -5,3 +5,6 @@
 
 #no tildes ~
 *~
+
+#no screwed up makefiles
+*._Makefile

@@ -44,7 +44,8 @@ typedef enum _CETYPE
     CE_FAIL_PWM_DUTYCYCLE,  // 12
     CE_FAIL_SLOTS,          // 13
     CE_FAIL_CAPE_LOADED,    // 14
-    CE_FAIL_ADC_PIN         // 15
+    CE_FAIL_ADC_PIN,        // 15
+    CE_INCORRECT_SELECTION	// 16
     
 } CETYPE;
 
@@ -52,6 +53,6 @@ typedef enum _CETYPE
 #define OUT		"out"
 #define	LOW		0
 #define HIGH	!LOW
-#define SLOTS       "/sys/devices/bone_capemgr.9/slots"
+#define SLOTS       "/sys/devices/bone_capemgr.8/slots"
 
 #endif

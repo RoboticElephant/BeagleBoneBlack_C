@@ -23,6 +23,8 @@
 #ifndef _JB_Communication_h
 #define _JB_Communication_h
 
-
+// I2C functions
+int writeI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
+int readI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
 
 #endif
