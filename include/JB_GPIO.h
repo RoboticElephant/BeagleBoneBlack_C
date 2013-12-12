@@ -27,6 +27,8 @@
 //  0.0.4:  7/4/2013
 //      - Removed the PWM into its own files
 //      - Added Input instead of output only
+//  0.0.5: 12/11/2013
+//      - Removed macros in the JB_GPIO.c that would create errors
 //
 /*****************************************************************************/
 

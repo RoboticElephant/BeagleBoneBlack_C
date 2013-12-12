@@ -53,6 +53,6 @@ typedef enum _CETYPE
 #define OUT		"out"
 #define	LOW		0
 #define HIGH	!LOW
-#define SLOTS       "/sys/devices/bone_capemgr.8/slots"
+#define SLOTS       "/sys/devices/bone_capemgr.9/slots"
 
 #endif

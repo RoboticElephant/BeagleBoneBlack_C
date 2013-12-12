@@ -28,7 +28,9 @@ int main (void)
     printf("trying PWM\n");
     
     pwmEnable();
+    DelayUS(20);
     value = pwmPINSelEnable(PWMLED);
+    DelayUS(20);
     if (value == CE_GOOD) {
         
         printf("enabled PWM\n");
