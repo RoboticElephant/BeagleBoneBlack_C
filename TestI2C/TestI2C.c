@@ -29,7 +29,9 @@ int main (void)
     unsigned char str[] = "Hello Friends";
     unsigned char readStr[50];
     printf("HelloBoneWorld\n");
-    
+    printf("Initiate I2C EEPROM\n");
+	value = initI2CEEPROM(1, 0x50, LC24C64);
+	printf("Value of I2C intiate is %i\n", value);
     printf("trying I2C\n");
         
     value = writeI2C(1, 0x50, 5, str, sizeof(str));

@@ -19,6 +19,33 @@
 #include "JB_Communication.h"
 #include "Hdr.h"
 
+int initI2CEEPROM(int busSelect, unsigned char address, unsigned char *eepromType)
+{	
+	if(busSelect == 1 && busSelect == 0)
+	{
+		printf("Selected an incorrect bus\n");
+		return CE_INCORRECT_SELECTION;
+	}
+	
+	FILE *fp;
+	char str[40];
+	char eepromValue[15];
+	
+	sprintf(str, "/sys/bus/i2c/devices/i2c-%i/new_device", busSelect);
+	if((fp = fopen(str, "rb+")) == NULL)
+	{
+		printf("Failed to open new_device\n");
+		return CE_FAIL_EXPORT;
+	}
+	
+	rewind(fp);
+	sprintf(eepromValue, "%s 0x%x", eepromType, address); 
+	fwrite(&eepromValue, sizeof(char), sizeof(eepromValue)/sizeof(eepromValue[0]), fp);
+	fclose(fp);
+	
+	return CE_GOOD;
+}
+
 int writeI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
 {
 	FILE *fp;

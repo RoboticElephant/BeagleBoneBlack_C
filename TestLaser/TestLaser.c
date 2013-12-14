@@ -17,6 +17,9 @@
 #include "Hdr.h"
 
 #define LASER_1 26
+#define LASER_2 47
+#define LASER_3 46
+#define LASER_4 27
 
 int main (void)
 {
