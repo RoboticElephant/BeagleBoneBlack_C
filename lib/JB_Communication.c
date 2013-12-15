@@ -16,9 +16,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "JB_Communication.h"
 #include "Hdr.h"
 
+/****************************************************************************/
+//
+// EEPROM I2C
+//
+/****************************************************************************/
 int initI2CEEPROM(int busSelect, unsigned char address, char *typeEEPROM)
 {
 	if(busSelect != 1 && busSelect != 0)
@@ -32,7 +45,7 @@ int initI2CEEPROM(int busSelect, unsigned char address, char *typeEEPROM)
 	return CE_GOOD;
 }
 
-int writeI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
+int writeI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
 {
 	FILE *fp;
 	int count;
@@ -62,7 +75,7 @@ int writeI2C(int busSelect, unsigned char address, long int location, unsigned c
 	return CE_INCORRECT_SELECTION;
 }
 
-int readI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
+int readI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
 {
 	FILE *fp;
 	int count;
@@ -91,3 +104,85 @@ int readI2C(int busSelect, unsigned char address, long int location, unsigned ch
 	
 	return CE_INCORRECT_SELECTION;
 }
+
+/***********************************************************************************************/
+//
+// I2C Main
+//
+/***********************************************************************************************/
+int initI2C(int busSelect, unsigned char address, int file)
+{
+    char filename[12];
+
+    sprintf(filename, "/dev/i2c-%i", busSelect);
+    if ((file = open(filename, O_RDWR)) < 0) 
+	{
+        printf("Failed to open the bus.");
+        /* ERROR HANDLING; you can check errno to see what went wrong */
+		return CE_FAIL_EXPORT;
+    }
+
+    if (ioctl(file, I2C_SLAVE, address) < 0) 
+	{
+        printf("Failed to acquire bus access and/or talk to slave.\n");
+        /* ERROR HANDLING; you can check errno to see what went wrong */
+		close(file);
+        return CE_FAIL_ACCESS;
+    }
+	
+	return CE_GOOD;
+}
+
+int MasterI2CWrite(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength)
+{
+	int file, errorValue;
+	errorValue = initI2C(busSelect, address, &file);
+	if(errorValue != CE_GOOD)
+	{
+		return errorValue;
+	}
+
+	int temp;
+	char buf[strLength + 1];
+	for(temp = 0; temp < strLength; temp++)
+	{
+		buf[temp] = *saveString++;	
+	}
+
+    if (pwrite(file, buf, strLength, location) != strLength) 
+	{
+        /* ERROR HANDLING: i2c transaction failed */
+        printf("Failed to write to the i2c bus.\n");
+		close(file);
+		return CE_FAIL_WRITE;
+    }
+	return CE_GOOD;
+}
+
+int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength)
+{
+	int file, errorValue;
+	errorValue = initI2C(busSelect, address, &file);
+	if(errorValue != CE_GOOD)
+	{
+		return errorValue;
+	}
+
+    char buf[strLength + 1];
+    // Using I2C Read
+    if (pread(file, buf, strLength, location) != strLength) 
+	{
+        /* ERROR HANDLING: i2c transaction failed */
+        printf("Failed to read from the i2c bus.\n");
+		close(file);
+		return CE_FAIL_READ;
+    }
+
+	int temp;
+	for(temp = 0; temp < strLength; temp++)
+	{
+		*saveString++ = buf[temp];	
+	}
+	return CE_GOOD;
+}
+

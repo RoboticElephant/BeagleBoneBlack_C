@@ -31,7 +31,7 @@ int main (void)
 	value += gpioExDirection(LASER_2, gpioOut);
 	value += gpioExDirection(LASER_3, gpioOut);
 	value += gpioExDirection(LASER_4, gpioOut);
-	printf("value: %i", value);
+	printf("value: %i\n", value);
     DelayMS(20);
     if (value == CE_GOOD) 
     {

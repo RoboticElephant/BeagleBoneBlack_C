@@ -19,18 +19,25 @@
 //      - Initial Release with GPIO out only
 //	0.0.2: 12/13/2013
 //		- Added initializing EEPROM
+//	0.0.3: 12/15/2013
+//		- Added I2C Function to be able to connect to any
 //
 /*****************************************************************************/
 
 #ifndef _JB_Communication_h
 #define _JB_Communication_h
 
-#define LC24C64		24c64
-#define LC24C256	24c256
+#define LC24C64		"24c64"
+#define LC24C256	"24c256"
 
+// I2C EEPROM functions
 int initI2CEEPROM(int busSelect, unsigned char address, char *typeEEPROM);
-// I2C functions
-int writeI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
-int readI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
+int writeI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
+int readI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
+
+// I2C Functions
+int initI2C(int busSelect, unsigned char address);
+int MasterI2CWrite(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength);
+int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength);
 
 #endif
