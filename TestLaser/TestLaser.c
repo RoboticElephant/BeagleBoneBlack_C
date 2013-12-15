@@ -2,7 +2,7 @@
 //  TestLaser.c
 //  
 //
-//  Created by Joshua Blakely on 12//2013.
+//  Created by Joshua Blakely on 12/7/2013.
 //
 // Purpose:
 //  The purpose of this file is to test the usage of a lazer beam
@@ -28,22 +28,38 @@ int main (void)
     printf("HelloBoneWorld\n");
     
     value = gpioExDirection(LASER_1, gpioOut);
+	value += gpioExDirection(LASER_2, gpioOut);
+	value += gpioExDirection(LASER_3, gpioOut);
+	value += gpioExDirection(LASER_4, gpioOut);
 	printf("value: %i", value);
-    DelayUS(20);
+    DelayMS(20);
     if (value == CE_GOOD) 
     {
 		for(temp = 0; temp < 10; temp++)
 		{
 			gpioDigOutput(LASER_1, HIGH);
-			printf("value: %i", value);
-			DelayUS(50);
+			DelayMS(50);
 			gpioDigOutput(LASER_1, LOW);
-			printf("value: %i", value);
-			DelayUS(50);
+			DelayMS(50);
+			gpioDigOutput(LASER_2, HIGH);
+			DelayMS(50);
+			gpioDigOutput(LASER_2, LOW);
+			DelayMS(50);
+			gpioDigOutput(LASER_3, HIGH);
+			DelayMS(50);
+			gpioDigOutput(LASER_3, LOW);
+			DelayMS(50);
+			gpioDigOutput(LASER_4, HIGH);
+			DelayMS(50);
+			gpioDigOutput(LASER_4, LOW);
+			DelayMS(50);
 		}
     } // Close of Else for pwmEnabled
     
     closeGPIO(LASER_1);
+	closeGPIO(LASER_2);
+	closeGPIO(LASER_3);
+	closeGPIO(LASER_4);
     
     return 0;
 }

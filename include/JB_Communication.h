@@ -25,11 +25,10 @@
 #ifndef _JB_Communication_h
 #define _JB_Communication_h
 
-// EEPROM types
-#define LC24C64		"24c64"
-#define LC24C256	"24c256"
+#define LC24C64		24c64
+#define LC24C256	24c256
 
-int initI2CEEPROM(int busSelect, unsigned char address, unsigned char *eepromType);
+int initI2CEEPROM(int busSelect, unsigned char address, char *typeEEPROM);
 // I2C functions
 int writeI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
 int readI2C(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
