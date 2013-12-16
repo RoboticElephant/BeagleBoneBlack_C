@@ -16,16 +16,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+//#include <string.h>
+//#include <unistd.h>
+//#include <linux/i2c-dev.h>
+//#include <sys/ioctl.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+//#include <fcntl.h>
 
 #include "JB_Communication.h"
 #include "Hdr.h"
+
+//int initI2C(int busSelect, unsigned char address, int *file);
 
 /****************************************************************************/
 //
@@ -110,23 +112,22 @@ int readI2CEEPROM(int busSelect, unsigned char address, long int location, unsig
 // I2C Main
 //
 /***********************************************************************************************/
-int initI2C(int busSelect, unsigned char address, int file)
+/*
+int initI2C(int busSelect, unsigned char address, int *file)
 {
     char filename[12];
 
     sprintf(filename, "/dev/i2c-%i", busSelect);
-    if ((file = open(filename, O_RDWR)) < 0) 
+    if ((*file = open(filename, O_RDWR)) < 0) 
 	{
         printf("Failed to open the bus.");
-        /* ERROR HANDLING; you can check errno to see what went wrong */
 		return CE_FAIL_EXPORT;
     }
 
-    if (ioctl(file, I2C_SLAVE, address) < 0) 
+    if (ioctl(*file, I2C_SLAVE, address) < 0) 
 	{
         printf("Failed to acquire bus access and/or talk to slave.\n");
-        /* ERROR HANDLING; you can check errno to see what went wrong */
-		close(file);
+		close(*file);
         return CE_FAIL_ACCESS;
     }
 	
@@ -151,7 +152,6 @@ int MasterI2CWrite(int busSelect, unsigned char address, unsigned int location, 
 
     if (pwrite(file, buf, strLength, location) != strLength) 
 	{
-        /* ERROR HANDLING: i2c transaction failed */
         printf("Failed to write to the i2c bus.\n");
 		close(file);
 		return CE_FAIL_WRITE;
@@ -172,7 +172,6 @@ int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, u
     // Using I2C Read
     if (pread(file, buf, strLength, location) != strLength) 
 	{
-        /* ERROR HANDLING: i2c transaction failed */
         printf("Failed to read from the i2c bus.\n");
 		close(file);
 		return CE_FAIL_READ;
@@ -185,4 +184,4 @@ int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, u
 	}
 	return CE_GOOD;
 }
-
+*/

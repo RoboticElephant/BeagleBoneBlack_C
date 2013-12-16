@@ -33,9 +33,9 @@ int main (void)
 	if(value == CE_GOOD)
 	{
 		printf("trying I2C\n"); 
-		value = writeI2C(1, 0x50, 5, str, sizeof(str));
+		value = writeI2CEEPROM(1, 0x50, 5, str, sizeof(str));
 		printf("Value of I2C is %i\n", value);
-		value = readI2C(1, 0x50, 7, readStr, 8);
+		value = readI2CEEPROM(1, 0x50, 7, readStr, 8);
 		printf("value = %i and readStr = %s\n", value, readStr);
 	}
 	
