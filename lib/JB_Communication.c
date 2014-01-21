@@ -16,172 +16,192 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <linux/i2c.h>
 //#include <string.h>
 //#include <unistd.h>
-//#include <linux/i2c-dev.h>
-//#include <sys/ioctl.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <fcntl.h>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
 #include "JB_Communication.h"
 #include "Hdr.h"
 
-//int initI2C(int busSelect, unsigned char address, int *file);
+int initI2C(int busSelect, int address, int *file);
+static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command, int size, union i2c_smbus_data *data);
 
 /****************************************************************************/
 //
 // EEPROM I2C
 //
+
 /****************************************************************************/
 int initI2CEEPROM(int busSelect, unsigned char address, char *typeEEPROM)
 {
-	if(busSelect != 1 && busSelect != 0)
-	{
-		printf("Incorrect BUS selected\n");
-		return CE_INCORRECT_SELECTION;
-	}
-	char str[60];
-	sprintf(str, "echo %s 0x%x > /sys/bus/i2c/devices/i2c-%i/new_device", typeEEPROM, address, busSelect);
-	system(str);
-	return CE_GOOD;
+    if (busSelect != 1 && busSelect != 0)
+    {
+        printf("Incorrect BUS selected\n");
+        return CE_INCORRECT_SELECTION;
+    }
+    char str[60];
+    sprintf(str, "echo %s 0x%x > /sys/bus/i2c/devices/i2c-%i/new_device", typeEEPROM, address, busSelect);
+    system(str);
+    return CE_GOOD;
 }
 
 int writeI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
 {
-	FILE *fp;
-	int count;
-	char str[50];
-	
-	if(busSelect == 1 || busSelect == 0)
-	{
-		sprintf(str, "/sys/bus/i2c/devices/%i-00%x/eeprom", busSelect, address);
+    FILE *fp;
+    int count;
+    char str[50];
 
-		if((fp = fopen(str, "rb+")) == NULL)
-		{
-			printf("Failed to open the new_device to export\n");
-			return CE_FAIL_EXPORT;
-		}
+    if (busSelect == 1 || busSelect == 0)
+    {
+        sprintf(str, "/sys/bus/i2c/devices/%i-00%x/eeprom", busSelect, address);
 
-		fseek(fp, location, SEEK_SET);		// Seeks from the beginning of the file until the desired location.
+        if ((fp = fopen(str, "rb+")) == NULL)
+        {
+            printf("Failed to open the new_device to export\n");
+            return CE_FAIL_EXPORT;
+        }
 
-		for(count = 0; count < strLength; count++)
-		{
-			fputc(*saveString++, fp);		// Writes a character to the I2C bus
-		}
-		fclose(fp);		// Closes the FIle pointer
+        fseek(fp, location, SEEK_SET); // Seeks from the beginning of the file until the desired location.
 
-		return CE_GOOD;
-	}
-	
-	return CE_INCORRECT_SELECTION;
+        for (count = 0; count < strLength; count++)
+        {
+            fputc(*saveString++, fp); // Writes a character to the I2C bus
+        }
+        fclose(fp); // Closes the FIle pointer
+
+        return CE_GOOD;
+    }
+
+    return CE_INCORRECT_SELECTION;
 }
 
 int readI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength)
 {
-	FILE *fp;
-	int count;
-	char str[50];
-	
-	if(busSelect == 1 || busSelect == 0)
-	{
-		sprintf(str, "/sys/bus/i2c/devices/%i-00%x/eeprom", busSelect, address);
-		
-		if((fp = fopen(str, "rb+")) == NULL)
-		{
-			printf("Failed to open the new_device to export\n");
-			return CE_FAIL_EXPORT;
-		}
-		
-		fseek(fp, location, SEEK_SET);		// Seeks from the beginning of the file until the desired location.
+    FILE *fp;
+    int count;
+    char str[50];
 
-		for(count = 0; count < strLength; count++)
-		{
-			*saveString++ = fgetc(fp);		// Writes a character to the I2C bus
-		}
-		fclose(fp);		// Closes the FIle pointer
+    if (busSelect == 1 || busSelect == 0)
+    {
+        sprintf(str, "/sys/bus/i2c/devices/%i-00%x/eeprom", busSelect, address);
 
-		return CE_GOOD;
-	}
-	
-	return CE_INCORRECT_SELECTION;
+        if ((fp = fopen(str, "rb+")) == NULL)
+        {
+            printf("Failed to open the new_device to export\n");
+            return CE_FAIL_EXPORT;
+        }
+
+        fseek(fp, location, SEEK_SET); // Seeks from the beginning of the file until the desired location.
+
+        for (count = 0; count < strLength; count++)
+        {
+            *saveString++ = fgetc(fp); // Writes a character to the I2C bus
+        }
+        fclose(fp); // Closes the FIle pointer
+
+        return CE_GOOD;
+    }
+
+    return CE_INCORRECT_SELECTION;
 }
 
 /***********************************************************************************************/
 //
 // I2C Main
 //
+
 /***********************************************************************************************/
-/*
-int initI2C(int busSelect, unsigned char address, int *file)
+int initI2C(int busSelect, int address, int *file)
 {
     char filename[12];
 
     sprintf(filename, "/dev/i2c-%i", busSelect);
-    if ((*file = open(filename, O_RDWR)) < 0) 
-	{
+    if ((*file = open(filename, O_RDWR)) < 0)
+    {
         printf("Failed to open the bus.");
-		return CE_FAIL_EXPORT;
+        return CE_FAIL_EXPORT;
     }
 
-    if (ioctl(*file, I2C_SLAVE, address) < 0) 
-	{
+    if (ioctl(*file, I2C_SLAVE, address) < 0)
+    {
         printf("Failed to acquire bus access and/or talk to slave.\n");
-		close(*file);
+        close(*file);
         return CE_FAIL_ACCESS;
     }
-	
-	return CE_GOOD;
+
+    return CE_GOOD;
 }
 
-int MasterI2CWrite(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength)
+int MasterI2CWrite(int busSelect, int address, int location, int *saveString, int strLength)
 {
-	int file, errorValue;
-	errorValue = initI2C(busSelect, address, &file);
-	if(errorValue != CE_GOOD)
-	{
-		return errorValue;
-	}
-
-	int temp;
-	char buf[strLength + 1];
-	for(temp = 0; temp < strLength; temp++)
-	{
-		buf[temp] = *saveString++;	
-	}
-
-    if (pwrite(file, buf, strLength, location) != strLength) 
-	{
-        printf("Failed to write to the i2c bus.\n");
-		close(file);
-		return CE_FAIL_WRITE;
-    }
-	return CE_GOOD;
-}
-
-int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength)
-{
-	int file, errorValue;
-	errorValue = initI2C(busSelect, address, &file);
-	if(errorValue != CE_GOOD)
-	{
-		return errorValue;
-	}
-
-    char buf[strLength + 1];
-    // Using I2C Read
-    if (pread(file, buf, strLength, location) != strLength) 
-	{
-        printf("Failed to read from the i2c bus.\n");
-		close(file);
-		return CE_FAIL_READ;
+    int file, errorValue, temp;
+    errorValue = initI2C(busSelect, address, &file);
+    if (errorValue != CE_GOOD)
+    {
+        return errorValue;
     }
 
-	int temp;
-	for(temp = 0; temp < strLength; temp++)
-	{
-		*saveString++ = buf[temp];	
-	}
-	return CE_GOOD;
+    union i2c_smbus_data data;
+    
+    if (strLength > 32)
+    {
+        strLength = 32;
+    }
+    for (temp = 1; temp <= strLength; temp++)
+    {
+        data.block[temp] = saveString[temp - 1];
+    }
+    data.block[0] = strLength;
+    
+    i2c_smbus_access(file, I2C_SMBUS_WRITE, location, I2C_SMBUS_I2C_BLOCK_BROKEN, &data);
+
+    return CE_GOOD;
 }
-*/
+
+int MasterI2CRead(int busSelect, int address, int location, int *saveString, int strLength)
+{
+    int file, errorValue, temp;
+    errorValue = initI2C(busSelect, address, &file);
+    if (errorValue != CE_GOOD)
+    {
+        return errorValue;
+    }
+
+    union i2c_smbus_data data;
+
+    if (strLength > 32)
+    {
+        strLength = 32;
+    }
+    data.block[0] = strLength;
+
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, location, strLength == 32 ? I2C_SMBUS_I2C_BLOCK_BROKEN : I2C_SMBUS_I2C_BLOCK_DATA, &data))
+    {
+        return CE_FAIL_ACCESS;
+    } else
+    {
+        for (temp = 1; temp <= data.block[0]; temp++)
+        {
+            saveString[temp - 1] = data.block[temp];
+        }
+        //        return data.block[0];
+    }
+
+    close(file);
+    return CE_GOOD;
+}
+
+static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command, int size, union i2c_smbus_data *data)
+{
+    struct i2c_smbus_ioctl_data args;
+
+    args.read_write = read_write;
+    args.command = command;
+    args.size = size;
+    args.data = data;
+    return ioctl(file, I2C_SMBUS, &args);
+}

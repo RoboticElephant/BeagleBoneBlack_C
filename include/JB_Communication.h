@@ -36,7 +36,7 @@ int writeI2CEEPROM(int busSelect, unsigned char address, long int location, unsi
 int readI2CEEPROM(int busSelect, unsigned char address, long int location, unsigned char *saveString, int strLength);
 
 // I2C Functions
-//int MasterI2CWrite(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength);
-//int MasterI2CRead(int busSelect, unsigned char address, unsigned int location, unsigned char *saveString, int strLength);
+int MasterI2CWrite(int busSelect, int address, int location, int *saveString, int strLength);
+int MasterI2CRead(int busSelect, int address, int location, int *saveString, int strLength);
 
 #endif
