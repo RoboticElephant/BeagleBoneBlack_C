@@ -2,7 +2,6 @@
 //
 // JB_GPIO.h
 //
-// Author: Josh Blakely
 // Company: Robotic Elephant
 // Revision: 0.0.4
 // Date: 5/13/2013
